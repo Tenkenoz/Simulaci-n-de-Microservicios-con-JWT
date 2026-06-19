@@ -1,10 +1,24 @@
 import { JwtService } from '../services/jwt.service.js';
 
 export const authMiddleware = (req, res, next) => {
-    // TODO: Implementar middleware de autenticación.
-    // 1. Extraer el token del header 'Authorization' (formato: Bearer <token>).
-    // 2. Si no hay token, responder con status 401.
-    // 3. Llamar a JwtService.verifyToken(token).
-    // 4. Si el token es válido, adjuntar el payload a req.user y llamar a next().
-    // 5. Si el token es inválido, responder con status 403.
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Acceso denegado: Token no proporcionado' });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const payload = JwtService.verifyToken(token);
+        req.user = payload;
+        next();
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Acceso denegado: Token expirado' });
+        } else if (error.name === 'JsonWebTokenError') {
+            return res.status(403).json({ message: 'Acceso denegado: Firma inválida' });
+        }
+        return res.status(500).json({ message: 'Error interno de validación' });
+    }
 };
