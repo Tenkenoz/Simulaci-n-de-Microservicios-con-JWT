@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import Sentry from '@sentry/node';
+import * as Sentry from '@sentry/node';
 import fs from 'fs';
 
 const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url)));

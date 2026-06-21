@@ -1,5 +1,5 @@
 import './instrument.js';
-import Sentry from '@sentry/node';
+import * as Sentry from '@sentry/node';
 import express from 'express';
 import { config } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
